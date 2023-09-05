@@ -1,79 +1,49 @@
-![](https://www.thinkphp.cn/uploads/images/20230630/300c856765af4d8ae758c503185f8739.png)
+# Tp8Admin
 
-ThinkPHP 8.0
-===============
+### 介绍
+🌈 一款最新的流行技术栈的后台管理系统！ 刚开始开发！未来可期！
 
-## 特性
+- PHP8.2
+- ThinkPHP8
+- Vue3.3
+- TypeScript
+- Element Plus
+- Pinia
 
-* 基于PHP`8.0+`重构
-* 升级`PSR`依赖
-* 依赖`think-orm`3.0版本
-* `6.0`/`6.1`无缝升级
+### 特别鸣谢
+🌈 感谢巨人提供肩膀，排名不分先后
+- [Thinkphp](http://www.thinkphp.cn/)
+- [BuildAdmin](https://gitee.com/wonderful-code/buildadmin)
+- [FastAdmin](https://gitee.com/karson/fastadmin)
+- [Vue](https://github.com/vuejs/core)
+- [vue-next-admin](https://gitee.com/lyt-top/vue-next-admin)
+- [Element Plus](https://github.com/element-plus/element-plus)
+- [TypeScript](https://github.com/microsoft/TypeScript)
+- [vue-router](https://github.com/vuejs/vue-router-next)
+- [vite](https://github.com/vitejs/vite)
+- [Pinia](https://github.com/vuejs/pinia)
+- [Axios](https://github.com/axios/axios)
+- [nprogress](https://github.com/rstacruz/nprogress)
+- [screenfull](https://github.com/sindresorhus/screenfull.js)
+- [mitt](https://github.com/developit/mitt)
+- [sass](https://github.com/sass/sass)
+- [wangEditor](https://github.com/wangeditor-team/wangEditor)
+- [echarts](https://github.com/apache/echarts)
+- [vueuse](https://github.com/vueuse/vueuse)
+- [lodash](https://github.com/lodash/lodash)
+- [eslint](https://github.com/eslint/eslint)
+- [prettier](https://github.com/prettier/prettier)
+- [vuepress](https://github.com/vuejs/vuepress)
+- [countUp](https://github.com/inorganik/countUp.js)
+- [Sortable](https://github.com/SortableJS/Sortable)
+- [v-code-diff](https://github.com/Shimada666/v-code-diff)
+- [jetbrains](https://www.jetbrains.com/)
+- [clicaptcha](https://github.com/hooray/clicaptcha)
+- [phinx](https://github.com/cakephp/phinx)
 
-
-> ThinkPHP8.0的运行环境要求PHP8.0.0+
-
-现在开始，你可以使用官方提供的[ThinkChat](https://chat.topthink.com/)，让你在学习ThinkPHP的旅途中享受私人AI助理服务！
-
-![](https://www.topthink.com/uploads/assistant/20230630/4d1a3f0ad2958b49bb8189b7ef824cb0.png)
-
-## 文档
-
-[完全开发手册](https://doc.thinkphp.cn)
-
-## 服务
-
-ThinkPHP生态服务由[顶想云](https://www.topthink.com)（TOPThink Cloud）提供，为生态提供专业的开发者服务和价值之选。
-
-## 赞助
-全新的[赞助计划](https://www.thinkphp.cn/sponsor)可以让你通过我们的网站、手册、欢迎页及GIT仓库获得巨大曝光，同时提升企业的品牌声誉，也更好保障ThinkPHP的可持续发展。
-
-[![](https://www.thinkphp.cn/uploads/images/20230630/48396092a0515886a3da6bd268131c8f.png)](http://github.crmeb.net/u/TPSY)
-
-[![](https://www.thinkphp.cn/uploads/images/20230630/a12bd248beee0e7491dd0f79dc4dd5e9.png)](https://www.thinkphp.cn/sponsor)
-
-[![](https://www.thinkphp.cn/uploads/images/20230630/e7f48d909d41dd5ebaf4a5aa982d0455.png)](https://www.thinkphp.cn/sponsor)
-
-## 安装
-
-~~~
-composer create-project topthink/think tp
-~~~
-
-启动服务
-
-~~~
-cd tp
-php think run
-~~~
-
-然后就可以在浏览器中访问
-
-~~~
-http://localhost:8000
-~~~
-
-如果需要更新框架使用
-~~~
-composer update topthink/framework
-~~~
-
-## 命名规范
-
-`ThinkPHP`遵循PSR-2命名规范和PSR-4自动加载规范。
-
-## 参与开发
-
-直接提交PR或者Issue即可
-
-## 版权信息
-
-ThinkPHP遵循Apache2开源协议发布，并提供免费使用。
-
+### 版权信息
+🌈 Tp8Admin 遵循`Apache2.0`开源协议发布，提供无需授权的免费使用。\
 本项目包含的第三方源码和二进制文件之版权信息另行标注。
 
-版权所有Copyright © 2006-2023 by ThinkPHP (http://thinkphp.cn) All rights reserved。
-
-ThinkPHP® 商标和著作权所有者为上海顶想信息科技有限公司。
-
-更多细节参阅 [LICENSE.txt](LICENSE.txt)
+### 支持项目
+🌈 无需捐赠，如果觉得项目不错，或者已经在使用了，希望你可以去 [Github](https://github.com/Tp8Admin/tp8admin) 帮我们点个 ⭐ Star，这将是对我们极大的鼓励与支持。
