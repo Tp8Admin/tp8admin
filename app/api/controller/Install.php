@@ -11,7 +11,7 @@ class Install extends Api
     /**
      * 环境基础检查
      */
-    public function envBaseCheck(): void
+    public function envCheckPhp(): void
     {
         // 1. 检测php版本
         $phpVersion        = phpversion();
