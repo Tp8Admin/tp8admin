@@ -51,11 +51,11 @@ class Install extends Api
 	    }
 
 	    // 3. 检测imagettftext方法
-	    $imagettftext = function_exists('imagettftext');
-	    if (!$imagettftext) {
-		    $imagettftextLink = [
+	    $phpGd2 = extension_loaded('gd') && function_exists('imagettftext');
+	    if (!$phpGd2) {
+		    $phpGd2Link = [
 			    [
-				    'name' => '需要安装freeType库',
+				    'name' => '需要安装gd2库和freeType库',
 				    'type' => 'text'
 			    ],
 			    [
@@ -108,12 +108,12 @@ class Install extends Api
 				'state'    => $phpPdo ? 'ok' : 'fail',
 				'link'     => $phpPdoLink ?? []
 			],
-			// 3.
-			'php_imagettftext'            => [
-				'name'     => '检测imagettftext方法',
-				'describe' => $imagettftext ? '已安装' : '未安装',
-				'state'    => $imagettftext ? 'ok' : 'fail',
-				'link'     => $imagettftextLink ?? []
+			// 3. 检测gd2扩展
+			'php_gd2'            => [
+				'name'     => '检测gd2方法',
+				'describe' => $phpGd2 ? '已安装' : '未安装',
+				'state'    => $phpGd2 ? 'ok' : 'fail',
+				'link'     => $phpGd2Link ?? []
 			],
 			// 4. 检测proc_open方法
 			'php_proc'           => [
