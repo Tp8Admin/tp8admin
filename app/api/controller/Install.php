@@ -5,6 +5,7 @@ namespace app\api\controller;
 
 
 use app\common\controller\Api;
+use ta\FileSystem;
 
 class Install extends Api
 {
@@ -13,6 +14,9 @@ class Install extends Api
      */
     public function envCheckPhp(): void
     {
+	    /**
+	     * step1：检测PHP环境
+	     */
         // 1. 检测php版本
         $phpVersion        = phpversion();
         $phpVersionCompare = version_compare($phpVersion, '8.2.0', '<');
@@ -50,12 +54,12 @@ class Install extends Api
 		    ];
 	    }
 
-	    // 3. 检测imagettftext方法
+	    // 3. 检测gd2方法
 	    $phpGd2 = extension_loaded('gd') && function_exists('imagettftext');
 	    if (!$phpGd2) {
 		    $phpGd2Link = [
 			    [
-				    'name' => '需要安装gd2库和freeType库',
+				    'name' => '需要安装gd2库',
 				    'type' => 'text'
 			    ],
 			    [
@@ -92,8 +96,26 @@ class Install extends Api
 		    ];
 	    }
 
+	    /**
+	     * step2: 检测目录是否可写
+	     */
+	    $runtimeIsWritable = FileSystem::pathIsWritable(runtime_path());
+	    if (!$runtimeIsWritable) {
+		    $runtimeIsWritableLink = [
+			    [
+				    'name'  => '查看原因',
+				    'title' => '单击查看原因',
+				    'type'  => 'faq',
+				    'url'   => '' //todo
+			    ]
+		    ];
+	    }
+
         // 输出
         $this->success('', [
+	        /**
+	         * step1：检测PHP环境
+	         */
 			// 1. 检测php版本
             'php_version' => [
                 'name'     => 'PHP版本',
@@ -122,6 +144,25 @@ class Install extends Api
 				'state'    => $phpProc ? 'ok' : 'fail',
 				'link'     => $phpProcLink ?? []
 			],
+	        /**
+	         * step2: 检测目录是否可写
+	         */
+	        'runtime_is_writable' => [
+				'name'     => 'runtime目录是否可写',
+		        'describe' => self::writableStateDescribe($runtimeIsWritable),
+		        'state'    => $runtimeIsWritable ? 'ok' : 'fail',
+		        'link'     => $runtimeIsWritableLink ?? []
+	        ],
         ]);
     }
+
+	/**
+	 * 目录是否可写描述
+	 * @param bool $state
+	 * @return string
+	 */
+	public function writableStateDescribe(bool $state): string
+	{
+		return $state ? '可写' : '不可写';
+	}
 }
