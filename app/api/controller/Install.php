@@ -28,7 +28,7 @@ class Install extends Api
                     'name'  => '如何解决',
                     'title' => '点击查看如何解决？',
                     'type'  => 'faq',
-                    'url'   => 'https://wonderful-code.gitee.io/guide/install/preparePHP.html'
+                    'url'   => '' //todo
                 ]
             ];
         }
