@@ -156,6 +156,123 @@ class Install extends Api
         ]);
     }
 
+	/**
+	 * npm环境检查
+	 */
+	public function envNpmCheck()
+	{
+		if ($this->isInstallComplete()) {
+			$this->error('', [], 2);
+		}
+
+		$packageManager = request()->post('manager', 'none');
+
+		// npm
+		$npmVersion        = Version::getVersion('npm');
+		$npmVersionCompare = Version::compare(self::$needDependentVersion['npm'], $npmVersion);
+		if (!$npmVersionCompare || !$npmVersion) {
+			$npmVersionLink = [
+				[
+					// 需要版本
+					'name' => __('need') . ' >= ' . self::$needDependentVersion['npm'],
+					'type' => 'text'
+				],
+				[
+					// 如何解决
+					'name'  => __('How to solve?'),
+					'title' => __('Click to see how to solve it'),
+					'type'  => 'faq',
+					'url'   => 'https://wonderful-code.gitee.io/guide/install/prepareNpm.html'
+				]
+			];
+		}
+
+		// 包管理器
+		if (in_array($packageManager, ['npm', 'cnpm', 'pnpm', 'yarn'])) {
+			$pmVersion        = Version::getVersion($packageManager);
+			$pmVersionCompare = Version::compare(self::$needDependentVersion[$packageManager], $pmVersion);
+
+			if (!$pmVersion) {
+				// 安装
+				$pmVersionLink[] = [
+					// 需要版本
+					'name' => __('need') . ' >= ' . self::$needDependentVersion[$packageManager],
+					'type' => 'text'
+				];
+				if ($npmVersionCompare) {
+					$pmVersionLink[] = [
+						// 点击安装
+						'name'  => __('Click Install %s', [$packageManager]),
+						'title' => '',
+						'type'  => 'install-package-manager'
+					];
+				} else {
+					$pmVersionLink[] = [
+						// 请先安装npm
+						'name' => __('Please install NPM first'),
+						'type' => 'text'
+					];
+				}
+			} elseif (!$pmVersionCompare) {
+				// 版本不足
+				$pmVersionLink[] = [
+					// 需要版本
+					'name' => __('need') . ' >= ' . self::$needDependentVersion[$packageManager],
+					'type' => 'text'
+				];
+				$pmVersionLink[] = [
+					// 请升级
+					'name' => __('Please upgrade %s version', [$packageManager]),
+					'type' => 'text'
+				];
+			}
+		} elseif ($packageManager == 'ni') {
+			$pmVersion        = __('nothing');
+			$pmVersionCompare = true;
+		} else {
+			$pmVersion        = __('nothing');
+			$pmVersionCompare = false;
+		}
+
+		// nodejs
+		$nodejsVersion        = Version::getVersion('node');
+		$nodejsVersionCompare = Version::compare(self::$needDependentVersion['node'], $nodejsVersion);
+		if (!$nodejsVersionCompare || !$nodejsVersion) {
+			$nodejsVersionLink = [
+				[
+					// 需要版本
+					'name' => __('need') . ' >= ' . self::$needDependentVersion['node'],
+					'type' => 'text'
+				],
+				[
+					// 如何解决
+					'name'  => __('How to solve?'),
+					'title' => __('Click to see how to solve it'),
+					'type'  => 'faq',
+					'url'   => 'https://wonderful-code.gitee.io/guide/install/prepareNodeJs.html'
+				]
+			];
+		}
+
+		$this->success('', [
+			'npm_version'         => [
+				'describe' => $npmVersion ?: __('Acquisition failed'),
+				'state'    => $npmVersionCompare ? self::$ok : self::$warn,
+				'link'     => $npmVersionLink ?? [],
+			],
+			'nodejs_version'      => [
+				'describe' => $nodejsVersion ?: __('Acquisition failed'),
+				'state'    => $nodejsVersionCompare ? self::$ok : self::$warn,
+				'link'     => $nodejsVersionLink ?? []
+			],
+			'npm_package_manager' => [
+				'describe' => $pmVersion ?: __('Acquisition failed'),
+				'state'    => $pmVersionCompare ? self::$ok : self::$warn,
+				'link'     => $pmVersionLink ?? [],
+			]
+		]);
+	}
+
     /**
      * 目录是否可写描述
      * @param bool $state

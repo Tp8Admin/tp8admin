@@ -3,7 +3,7 @@
 use PHPUnit\Framework\TestCase;
 use ta\FileSystem;
 
-class FileSystemTest extends TestCase
+class ExtendFileSystemTest extends TestCase
 {
     public function testPathIsWritable()
     {
