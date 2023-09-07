@@ -10,7 +10,7 @@
 - Element Plus
 - Pinia
 
-### 特别鸣谢
+### 特别鸣谢开源项目
 🌈 感谢巨人提供肩膀，排名不分先后
 - [Thinkphp](http://www.thinkphp.cn/)
 - [BuildAdmin](https://gitee.com/wonderful-code/buildadmin)
@@ -40,6 +40,13 @@
 - [jetbrains](https://www.jetbrains.com/)
 - [clicaptcha](https://github.com/hooray/clicaptcha)
 - [phinx](https://github.com/cakephp/phinx)
+
+### 特别鸣谢开发工具
+- [PhpStorm](https://www.jetbrains.com/phpstorm/)
+- [VSCode](https://code.visualstudio.com/)
+- [Navicat](https://www.navicat.com.cn/)
+- [ApiPost](https://www.apipost.cn/)
+- [EasySrv](https://github.com/xianyunleo/EasySrv)
 
 ### 版权信息
 🌈 Tp8Admin 遵循`Apache2.0`开源协议发布，提供无需授权的免费使用。\
