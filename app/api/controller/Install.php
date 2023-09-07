@@ -173,7 +173,7 @@ class Install extends Api
 	/**
 	 * npm环境检查
 	 */
-	public function envNpmCheck()
+	public function envCheckNpm()
 	{
 		// 1. 检测npm版本
 		$npmVersion = Terminal::getResultFromProc('npm -v');
