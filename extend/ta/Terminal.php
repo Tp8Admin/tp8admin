@@ -19,7 +19,7 @@ class Terminal
 	 * @param $commandName "eg: npm -v"
 	 * @return false|string
 	 */
-	public function getResultFromProc(string $commandName): bool|string
+	public static function getResultFromProc(string $commandName): bool|string
 	{
 		$descriptorspec = [
 			0 => array("pipe", "r"),  // 标准输入
