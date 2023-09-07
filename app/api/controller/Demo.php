@@ -23,4 +23,9 @@ class Demo extends Api
     {
         $this->error('操作失败');
     }
+
+    public function test()
+    {
+        echo "test";
+    }
 }
