@@ -223,11 +223,13 @@ class Install extends Api
 
 		$this->success('', [
 			'npm_version'    => [
+				'name'     => '前端相关：NPM版本',
 				'describe' => $npmVersion ?: '获取失败',
 				'state'    => !$npmVersionCompare ? self::$ok : self::$warn,
 				'link'     => $npmVersionLink ?? [],
 			],
 			'nodejs_version' => [
+				'name'     => '前端相关：NodeJS版本',
 				'describe' => $nodejsVersion ?: '获取失败',
 				'state'    => !$nodejsVersionCompare ? self::$ok : self::$warn,
 				'link'     => $nodejsVersionLink ?? []
