@@ -12,9 +12,15 @@ class Install extends Api
 {
 	// 版本依赖的版本，统一管理
 	public static array $needDependentVersion = [
+		// php
 		'php'  => '8.2.3',
+		// node相关
 		'node' => '18.14.0',
-		'npm'  => '9.3.1'
+		'npm'  => '9.3.1',
+		// 包管理器
+		'cnpm' => '7.1.0',
+		'yarn' => '1.2.0',
+		'pnpm' => '8.6.9',
 	];
 
 	// 结果的状态
@@ -32,13 +38,13 @@ class Install extends Api
 		 */
 		// 1. 检测php版本
 		$phpVersion        = phpversion();
-		$phpVersionCompare = version_compare($phpVersion, '8.2.0', '<');
+		$phpVersionCompare = version_compare($phpVersion, '8.2.0', '>=');
 		// 不符合版本返回
 		if ($phpVersionCompare) {
 			$phpVersionLink = [
 				[
 					// 需要PHP版本
-					'name' => '需要 >= 8.0.2',
+					'name' => '需要 >= '. self::$needDependentVersion['php'],
 					'type' => 'text'
 				],
 				[
@@ -134,7 +140,7 @@ class Install extends Api
 			'php_version'         => [
 				'name'     => 'PHP相关：版本',
 				'describe' => $phpVersion,
-				'state'    => !$phpVersionCompare ? self::$ok : self::$fail,
+				'state'    =>$phpVersionCompare ? self::$ok : self::$fail,
 				'link'     => $phpVersionLink ?? [],
 			],
 			// 2. 检测PDO扩展
@@ -173,14 +179,14 @@ class Install extends Api
 	/**
 	 * npm环境检查
 	 */
-	public function envCheckNpm()
+	public function envCheckNpm(): void
 	{
 		// 1. 检测npm版本
 		$npmVersion = Terminal::getResultFromProc('npm -v');
 		// 版本比较
-		$npmVersionCompare = version_compare($npmVersion, self::$needDependentVersion['npm'], '<');
+		$npmVersionCompare = version_compare($npmVersion, self::$needDependentVersion['npm'], '>=');
 		// 不符合版本返回
-		if ($npmVersionCompare) {
+		if (!$npmVersionCompare) {
 			$npmVersionLink = [
 				[
 					// 需要版本
@@ -202,9 +208,9 @@ class Install extends Api
 		// 去掉版本号前面的v
 		$nodejsVersion = ltrim($nodejsVersion, 'v');
 		// 版本比较
-		$nodejsVersionCompare = version_compare($nodejsVersion, self::$needDependentVersion['node'], '<');
+		$nodejsVersionCompare = version_compare($nodejsVersion, self::$needDependentVersion['node'], '>=');
 		// 不符合版本返回
-		if ($nodejsVersionCompare) {
+		if (!$nodejsVersionCompare) {
 			$nodejsVersionLink = [
 				[
 					// 需要版本
@@ -221,19 +227,58 @@ class Install extends Api
 			];
 		}
 
-		$this->success('', [
-			'npm_version'    => [
+		// 3. 检测包管理器的版本
+		$packageManagerName = request()->post('manager', 'none');
+		if (in_array($packageManagerName, ['npm', 'yarn', 'cnpm', 'pnpm'])) {
+			$packageManagerVersion = Terminal::getResultFromProc($packageManagerName . ' -v');
+
+			// 版本比较，没有版本
+			if (!$packageManagerVersion) {
+				// 安装
+				$packageManagerVersionLink[] = [
+					// 点击安装
+					'name'  => '点击安装 ' . $packageManagerName,
+					'title' => '',
+					'type'  => 'install-package-manager'
+				];
+			}
+
+			// 正常版本，版本比较
+			$packageManagerVersionCompare = version_compare($packageManagerVersion, self::$needDependentVersion[$packageManagerName], '>=');
+			if (!$packageManagerVersionCompare) {
+				// 版本不足,需要版本
+				$packageManagerVersionLink[] = [
+					'name' => '需要 >=' . self::$needDependentVersion[$packageManagerName],
+					'type' => 'text'
+				];
+				// 请升级
+				$packageManagerVersionLink[] = [
+					'name' => '请升级', [$packageManagerName],
+					'type' => 'text'
+				];
+			}
+		}
+
+		// 返回结果
+		$this->success('获取成功', [
+			'npm_version'     => [
 				'name'     => '前端相关：NPM版本',
 				'describe' => $npmVersion ?: '获取失败',
-				'state'    => !$npmVersionCompare ? self::$ok : self::$warn,
+				'state'    => $npmVersionCompare ? self::$ok : self::$warn,
 				'link'     => $npmVersionLink ?? [],
 			],
-			'nodejs_version' => [
+			'nodejs_version'  => [
 				'name'     => '前端相关：NodeJS版本',
 				'describe' => $nodejsVersion ?: '获取失败',
-				'state'    => !$nodejsVersionCompare ? self::$ok : self::$warn,
+				'state'    => $nodejsVersionCompare ? self::$ok : self::$warn,
 				'link'     => $nodejsVersionLink ?? []
 			],
+			'package_manager' => [
+				'name'     => '前端相关：包管理器' . $packageManagerName,
+				'describe' => $packageManagerName ?: '获取失败',
+				'state'    => $packageManagerVersionCompare ? self::$ok : self::$warn,
+				'link'     => $packageManagerVersionLink ?? [],
+			]
 		]);
 	}
 
