@@ -48,6 +48,9 @@
 - [ApiPost](https://www.apipost.cn/)
 - [EasySrv](https://github.com/xianyunleo/EasySrv)
 
+### 接口地址
+- [ApiPost接口地址](https://console-docs.apipost.cn/preview/c99ded008060d2da/86b091dbdbf38721)
+
 ### 版权信息
 🌈 Tp8Admin 遵循`Apache2.0`开源协议发布，提供无需授权的免费使用。\
 本项目包含的第三方源码和二进制文件之版权信息另行标注。
