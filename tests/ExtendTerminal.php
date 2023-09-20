@@ -23,4 +23,17 @@ class ExtendTerminal  extends TestCase
 		echo "NPM版本是：". $result;
 		$this->assertIsString($result);
 	}
+
+	/**
+	 * 测试通过Proc获取命令行执行结果
+	 * @return void
+	 */
+	public function testGetPhpVersionFromProc()
+	{
+		$terminal = new \ta\Terminal();
+		$result = $terminal->getResultFromProc('php -v');
+		echo "PHP版本是：". $result;
+		$this->assertIsString($result);
+	}
+
 }
