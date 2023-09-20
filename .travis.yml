@@ -1,5 +1,8 @@
 language: php         # 声明构建语言环境
 
+php:
+  - "8.2"
+
 notifications:        # 每次构建的时候是否邮箱通知
   email: true
 
