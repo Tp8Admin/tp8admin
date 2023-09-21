@@ -27,10 +27,11 @@ install:              # 安装
 script:               # 执行:下面的命令
   - php think command:getPhpVersion
 
+# 打包，参考文档：https://docs.travis-ci.com/user/deployment/releases/
 deploy:
   provider: releases
-  api_key: $GITHUB_TOKEN
+  api_key: $GITHUB_TOKEN # 填写 GitHub 的 token （Settings -> Developer Settings -> Personal access tokens->tokens (classic)）
   file: "tp8admin.zip"
   skip_cleanup: true
   on:
-    branch: main
+    tags: true
