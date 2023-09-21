@@ -30,7 +30,7 @@ script:               # 执行:下面的命令
 deploy:               # 部署
   provider: releases  # 部署到 GitHub Release
   api_key:            # 填写 GitHub 的 token （Settings -> Personal access tokens -> Generate new token）
-    secure: $GITHUB_TOKEN
+    secure: ${GITHUB_TOKEN}
   file:
     - tp8admin.zip
   skip_cleanup: true
