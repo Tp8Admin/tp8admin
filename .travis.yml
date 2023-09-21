@@ -27,12 +27,10 @@ install:              # 安装
 script:               # 执行:下面的命令
   - php think command:getPhpVersion
 
-deploy:               # 部署
-  provider: releases  # 部署到 GitHub Release
-  # 填写 GitHub 的 token （Settings -> Developer Settings -> Personal access tokens->tokens (classic)）
-  github_token: $GITHUB_TOKEN
-  file:
-    - tp8admin.zip
+deploy:
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  file: "tp8admin.zip"
   skip_cleanup: true
-  on:                 # 发布时机
-    branch: main      # tags 设置为 true 表示只有在有 tag 的情况下才部署
+  on:
+    branch: main
