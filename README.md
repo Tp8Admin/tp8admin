@@ -1,5 +1,7 @@
 # Tp8Admin
 
+[![Build Status](https://app.travis-ci.com/tp8admin/tp8admin.svg?branch=main)](https://app.travis-ci.com/tp8admin/tp8admin)
+
 ### 介绍
 🌈 一款最新的流行技术栈的后台管理系统！ 刚开始开发！未来可期！
 
