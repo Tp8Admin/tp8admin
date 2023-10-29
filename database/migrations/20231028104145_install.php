@@ -148,4 +148,89 @@ class Install extends Migrator
         }
     }
 
+    public function adminGroupAccess(): void
+    {
+        if (!$this->hasTable('admin_group_access')) {
+            $table = $this->table('admin_group_access', [
+                'id' => false,
+                'comment' => '管理员分组权限关联表',
+                'row_format' => 'DYNAMIC',
+                'primary_key' => ['admin_id', 'group_id'],
+                'collation' => 'utf8mb4_unicode_ci',
+            ]);
+
+            $table
+                // 相关ID
+                ->addColumn('admin_id', 'integer', ['comment' => '管理员ID', 'signed' => false, 'null' => false])
+                ->addColumn('group_id', 'integer', ['comment' => '分组ID', 'signed' => false, 'null' => false])
+                // 索引
+                ->addIndex(['admin_id', 'group_id'], ['unique' => true])
+                ->create();
+        }
+    }
+
+    public function adminLog(): void
+    {
+        if (!$this->hasTable('admin_log')) {
+            $table = $this->table('admin_log', [
+                'id' => false,
+                'comment' => '管理员日志表',
+                'row_format' => 'DYNAMIC',
+                'primary_key' => 'id',
+                'collation' => 'utf8mb4_unicode_ci',
+            ]);
+
+            $table
+                // 相关ID
+                ->addColumn('id', 'integer', ['comment' => 'ID', 'signed' => false, 'identity' => true, 'null' => false])
+                ->addColumn('admin_id', 'integer', ['comment' => '管理员ID', 'signed' => false, 'null' => false])
+                // 内容相关
+                ->addColumn('username', 'string', ['limit' => 20, 'default' => '', 'comment' => '用户名', 'null' => false])
+                ->addColumn('url', 'string', ['limit' => 255, 'default' => '', 'comment' => '操作URL', 'null' => false])
+                ->addColumn('title', 'string', ['limit' => 50, 'default' => '', 'comment' => '日志标题', 'null' => false])
+                ->addColumn('data', 'text', ['limit' => MysqlAdapter::TEXT_LONG, 'null' => true, 'default' => null, 'comment' => '请求数据'])
+                ->addColumn('ip', 'string', ['limit' => 15, 'default' => '', 'comment' => 'IP地址', 'null' => false])
+                ->addColumn('user_agent', 'string', ['limit' => 255, 'default' => '', 'comment' => 'user-agent', 'null' => false])
+                // 时间相关
+                ->addColumn('create_time', 'biginteger', ['signed' => false, 'limit' => 16, 'default' => 0, 'comment' => '创建时间', 'null' => false])
+                // 索引
+                ->addIndex(['admin_id'], ['unique' => false])
+                ->create();
+        }
+    }
+
+    public function area(): void
+    {
+        if (!$this->hasTable('area')) {
+            $table = $this->table('area', [
+                'id' => false,
+                'comment' => '地区表',
+                'row_format' => 'DYNAMIC',
+                'primary_key' => 'id',
+                'collation' => 'utf8mb4_unicode_ci',
+            ]);
+
+            $table
+                // 相关ID
+                ->addColumn('id', 'integer', ['comment' => 'ID', 'signed' => false, 'identity' => true, 'null' => false])
+                ->addColumn('pid', 'integer', ['signed' => false, 'limit' => MysqlAdapter::INT_SMALL, 'default' => 0, 'comment' => '上级地区ID', 'null' => false])
+                // 名称相关
+                ->addColumn('name', 'string', ['limit' => 50, 'default' => '', 'comment' => '地区名称', 'null' => false])
+                ->addColumn('short_name', 'string', ['limit' => 50, 'default' => '', 'comment' => '地区简称', 'null' => false])
+                ->addColumn('merger_name', 'string', ['limit' => 255, 'default' => '', 'comment' => '地区全称', 'null' => false])
+                // 内容相关
+                ->addColumn('level', 'integer', ['signed' => false, 'limit' => MysqlAdapter::INT_TINY, 'default' => null, 'comment' => '层级:1=省,2=市,3=区/县', 'null' => false])
+                ->addColumn('code', 'string', ['limit' => 20, 'default' => '', 'comment' => '地区编码', 'null' => false])
+                ->addColumn('zip_code', 'string', ['limit' => 20, 'default' => '', 'comment' => '邮政编码', 'null' => false])
+                ->addColumn('pinyin', 'string', ['limit' => 255, 'default' => '', 'comment' => '拼音', 'null' => false])
+                ->addColumn('first', 'string', ['limit' => 50, 'default' => '', 'comment' => '首字母', 'null' => false])
+                ->addColumn('lng', 'string', ['limit' => 20, 'default' => '', 'comment' => '经度', 'null' => false])
+                ->addColumn('lat', 'string', ['limit' => 20, 'default' => '', 'comment' => '纬度', 'null' => false])
+                // 索引
+                ->addIndex(['pid'])
+                ->addIndex(['code'], ['unique' => true])
+                ->create();
+        }
+    }
+
 }
