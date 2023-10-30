@@ -18,7 +18,7 @@ class Install extends Migrator
         // 地区
         $this->area();
         // 附件
-        $this->attachmennt();
+        $this->attachment();
         // 验证码
         $this->captcha();
         // 设置
@@ -26,7 +26,7 @@ class Install extends Migrator
         // 菜单
         $this->menuRule();
         // 数据安全
-        $this->securityDartaRecycle();
+        $this->securityDataRecycle();
         $this->securityDataRecycleLog();
         $this->securitySensitiveData();
         $this->securitySensitiveDataLog();
@@ -232,5 +232,119 @@ class Install extends Migrator
                 ->create();
         }
     }
+
+    private function attachment(): void
+    {
+        if (!$this->hasTable('attachment')) {
+            $table = $this->table('attachment', [
+                'id' => false,
+                'comment' => '附件表',
+                'row_format' => 'DYNAMIC',
+                'primary_key' => 'id',
+                'collation' => 'utf8mb4_unicode_ci',
+            ]);
+
+            $table
+                // 相关ID
+                ->addColumn('id', 'integer', ['comment' => 'ID', 'signed' => false, 'identity' => true, 'null' => false])
+                ->addColumn('admin_id', 'integer', ['signed' => false, 'default' => 0, 'comment' => '管理员ID', 'null' => false])
+                ->addColumn('user_id', 'integer', ['signed' => false, 'default' => 0, 'comment' => '上传用户ID', 'null' => false])
+                // 名称
+                ->addColumn('name', 'string', ['limit' => 50, 'default' => '', 'comment' => '名称', 'null' => false])
+                // 附件相关
+                ->addColumn('url', 'string', ['limit' => 255, 'default' => '', 'comment' => 'url', 'null' => false])
+                ->addColumn('width', 'integer', ['signed' => false, 'limit' => MysqlAdapter::INT_SMALL, 'default' => 0, 'comment' => '宽度', 'null' => false])
+                ->addColumn('height', 'integer', ['signed' => false, 'limit' => MysqlAdapter::INT_SMALL, 'default' => 0, 'comment' => '高度', 'null' => false])
+                ->addColumn('size', 'integer', ['signed' => false, 'limit' => MysqlAdapter::INT_BIG, 'default' => 0, 'comment' => '大小', 'null' => false])
+                ->addColumn('mime_type', 'string', ['limit' => 30, 'default' => '', 'comment' => 'mine类型', 'null' => false])
+                ->addColumn('quote', 'integer', ['signed' => false, 'limit' => MysqlAdapter::INT_SMALL, 'default' => 0, 'comment' => '引用次数', 'null' => false])
+                ->addColumn('storage', 'string', ['limit' => 30, 'default' => '', 'comment' => '存储引擎', 'null' => false])
+                ->addColumn('sha1', 'string', ['limit' => 40, 'default' => '', 'comment' => 'sha1', 'null' => false])
+                // 时间相关
+                ->addColumn('create_time', 'biginteger', ['signed' => false, 'limit' => 16, 'default' => 0, 'comment' => '创建时间', 'null' => false])
+                ->addColumn('last_time', 'biginteger', ['signed' => false, 'limit' => 16, 'default' => 0, 'comment' => '最后上传时间', 'null' => false])
+                // 索引
+                ->addIndex(['admin_id'])
+                ->addIndex(['user_id'])
+                ->addIndex(['name'])
+                ->addIndex(['url'])
+                ->addIndex(['sha1'])
+                ->create();
+        }
+    }
+
+    private function captcha(): void
+    {
+        if (!$this->hasTable('captcha')) {
+            $table = $this->table('captcha', [
+                'id' => false,
+                'comment' => '验证码表',
+                'row_format' => 'DYNAMIC',
+                'primary_key' => 'id',
+                'collation' => 'utf8mb4_unicode_ci',
+            ]);
+
+            $table
+                // 验证码相关
+                ->addColumn('key', 'string', ['limit' => 32, 'default' => '', 'comment' => '验证码KEY', 'null' => false])
+                ->addColumn('code', 'string', ['limit' => 32, 'default' => '', 'comment' => '验证码(加密后)', 'null' => false])
+                ->addColumn('captcha', 'text', ['limit' => MysqlAdapter::TEXT_LONG, 'null' => true, 'default' => null, 'comment' => '验证码数据'])
+                // 时间相关
+                ->addColumn('create_time', 'biginteger', ['signed' => false, 'limit' => 16, 'default' => 0, 'comment' => '创建时间', 'null' => false])
+                ->addColumn('expire_time', 'biginteger', ['signed' => false, 'limit' => 16, 'default' => 0, 'comment' => '失效时间', 'null' => false])
+                // 索引
+                ->addIndex(['key'], ['unique' => true])
+                ->create();
+        }
+    }
+
+    private function menuRule()
+    {
+    }
+
+    private function securityDataRecycle()
+    {
+    }
+
+    private function securityDataRecycleLog()
+    {
+    }
+
+    private function securitySensitiveData()
+    {
+    }
+
+    private function securitySensitiveDataLog()
+    {
+    }
+
+    private function testBuild()
+    {
+    }
+
+    private function token()
+    {
+    }
+
+    private function user()
+    {
+    }
+
+    private function userGroup()
+    {
+    }
+
+    private function userMoneyLog()
+    {
+    }
+
+    private function userRule()
+    {
+    }
+
+    private function crudLog()
+    {
+    }
+
 
 }
