@@ -1,4 +1,15 @@
 <?php
+// +----------------------------------------------------------------------
+// | NewThink [ Think More,Think Better! ]
+// +----------------------------------------------------------------------
+// | Copyright (c) 2016~2030 http://www.sxqibo.com All rights reserved.
+// +----------------------------------------------------------------------
+// | 版权所有：山西岐伯信息科技有限公司
+// +----------------------------------------------------------------------
+// | Author: yanghongwei  Date:2023/11/1 Time:16:56
+// +----------------------------------------------------------------------
+
+declare(strict_types=1);
 
 use Phinx\Db\Adapter\MysqlAdapter;
 use think\migration\Migrator;
@@ -8,47 +19,45 @@ class Install extends Migrator
     /**
      * 安装文件
      */
-    public function change()
+    public function change(): void
     {
         // 管理员相关
         $this->admin();
         $this->adminGroup();
         $this->adminGroupAccess();
+        $this->adminRule();// 菜单相关
         $this->adminLog();
-        // 地区
-        $this->area();
-        // 附件
-        $this->attachment();
-        // 验证码
-        $this->captcha();
-        // 设置
-        $this->config();
-        // 菜单
-        $this->menuRule();
-        // 数据安全
+        // 通用相关
+        $this->commonConfig(); // 设置
+        $this->commonArea();// 地区
+        $this->commonAttachment();// 附件
+        $this->commonCaptcha();// 验证码
+        $this->commonToken();// token
+        // 安全相关
         $this->securityDataRecycle();
         $this->securityDataRecycleLog();
         $this->securitySensitiveData();
         $this->securitySensitiveDataLog();
-        // 测试
-        $this->testBuild();
-        // token
-        $this->token();
-        // 用户
+        // 用户相关
         $this->user();
         $this->userGroup();
         $this->userMoneyLog();
         $this->userRule();
-        // 开发
-        $this->crudLog();
+        // 开发相关
+        $this->devTestBuild();
+        $this->devCrudLog();
+
     }
 
+    // +----------------------------------------------------------------------
+    // | 管理员相关
+    // +----------------------------------------------------------------------
     public function admin(): void
     {
         if (!$this->hasTable('admin')) {
             $table = $this->table('admin', [
                 'id' => false,
-                'comment' => '管理员表',
+                'comment' => '管理员',
                 'row_format' => 'DYNAMIC',
                 'primary_key' => 'id',
                 'collation' => 'utf8mb4_unicode_ci',
@@ -89,7 +98,7 @@ class Install extends Migrator
         if (!$this->table('admin_group')) {
             $table = $this->table('admin_group', [
                 'id' => false,
-                'comment' => '管理员分组表',
+                'comment' => '管理员-分组表',
                 'row_format' => 'DYNAMIC',
                 'primary_key' => 'id',
                 'collation' => 'utf8mb4_unicode_ci',
@@ -113,12 +122,107 @@ class Install extends Migrator
         }
     }
 
-    public function config(): void
+    public function adminGroupAccess(): void
     {
-        if (!$this->hasTable('config')) {
+        if (!$this->hasTable('admin_group_access')) {
+            $table = $this->table('admin_group_access', [
+                'id' => false,
+                'comment' => '管理员-分组权限关联',
+                'row_format' => 'DYNAMIC',
+                'primary_key' => ['admin_id', 'group_id'],
+                'collation' => 'utf8mb4_unicode_ci',
+            ]);
+
+            $table
+                // 相关ID
+                ->addColumn('admin_id', 'integer', ['comment' => '管理员ID', 'signed' => false, 'null' => false])
+                ->addColumn('group_id', 'integer', ['comment' => '分组ID', 'signed' => false, 'null' => false])
+                // 索引
+                ->addIndex(['admin_id', 'group_id'], ['unique' => true])
+                ->create();
+        }
+    }
+
+    private function adminRule(): void
+    {
+        if (!$this->hasTable('admin_rule')) {
+            $table = $this->table('admin_rule', [
+                'id' => false,
+                'comment' => '管理员-菜单和权限规则',
+                'row_format' => 'DYNAMIC',
+                'primary_key' => 'id',
+                'collation' => 'utf8mb4_unicode_ci',
+            ]);
+
+            $table
+                // ID相关
+                ->addColumn('id', 'integer', ['comment' => 'ID', 'signed' => false, 'identity' => true, 'null' => false])
+                ->addColumn('pid', 'integer', ['signed' => false, 'default' => 0, 'comment' => '上级ID', 'null' => false])
+                // 名称类型相关
+                ->addColumn('type', 'enum', ['values' => 'menu_dir,menu,button', 'default' => 'menu', 'comment' => '类型：menu_dir=菜单目录,menu=菜单项,button=页面按钮', 'null' => false])
+                ->addColumn('title', 'string', ['limit' => 50, 'default' => '', 'comment' => '标题', 'null' => false])
+                ->addColumn('name', 'string', ['limit' => 50, 'default' => '', 'comment' => '规则名称', 'null' => false])
+                // 其他相关
+                ->addColumn('path', 'string', ['limit' => 255, 'default' => '', 'comment' => '路由路径', 'null' => false])
+                ->addColumn('icon', 'string', ['limit' => 50, 'default' => '', 'comment' => '图标', 'null' => false])
+                ->addColumn('menu_type', 'enum', ['values' => 'tab,link,iframe', 'default' => null, 'comment' => '菜单类型:tab=选项卡,link=链接,iframe=Iframe', 'null' => true])
+                ->addColumn('url', 'string', ['limit' => 255, 'default' => '', 'comment' => '链接', 'null' => false])
+                ->addColumn('component', 'string', ['limit' => 255, 'default' => '', 'comment' => '组件', 'null' => false])
+                ->addColumn('keepalive', 'integer', ['signed' => false, 'limit' => MysqlAdapter::INT_TINY, 'default' => 0, 'comment' => '缓存:0=否,1=是', 'null' => false])
+                ->addColumn('extend', 'enum', ['values' => 'none,add_rules_only,add_menu_only', 'default' => 'none', 'comment' => '扩展属性:none=无,add_rules_only=只添加为路由,add_menu_only=只添加为菜单', 'null' => true])
+                ->addColumn('remark', 'string', ['limit' => 255, 'default' => '', 'comment' => '备注', 'null' => false])
+                ->addColumn('weigh', 'integer', ['default' => 0, 'comment' => '权重', 'null' => false])
+                ->addColumn('status', 'enum', ['values' => 'normal,hidden,disabled', 'default' => 'normal', 'comment' => '状态:normal=正常,hidden=隐藏,disabled=禁用', 'null' => false])
+                // 时间相关
+                ->addColumn('create_time', 'biginteger', ['signed' => false, 'limit' => 16, 'default' => 0, 'comment' => '创建时间', 'null' => false])
+                ->addColumn('update_time', 'biginteger', ['signed' => false, 'limit' => 16, 'default' => 0, 'comment' => '更新时间', 'null' => false])
+                // 索引
+                ->addIndex(['pid'])
+                ->addIndex(['name'], ['unique' => true])
+                ->create();
+        }
+    }
+
+    public function adminLog(): void
+    {
+        if (!$this->hasTable('admin_log')) {
+            $table = $this->table('admin_log', [
+                'id' => false,
+                'comment' => '管理员-日志表',
+                'row_format' => 'DYNAMIC',
+                'primary_key' => 'id',
+                'collation' => 'utf8mb4_unicode_ci',
+            ]);
+
+            $table
+                // 相关ID
+                ->addColumn('id', 'integer', ['comment' => 'ID', 'signed' => false, 'identity' => true, 'null' => false])
+                ->addColumn('admin_id', 'integer', ['comment' => '管理员ID', 'signed' => false, 'null' => false])
+                // 内容相关
+                ->addColumn('username', 'string', ['limit' => 20, 'default' => '', 'comment' => '用户名', 'null' => false])
+                ->addColumn('url', 'string', ['limit' => 255, 'default' => '', 'comment' => '操作URL', 'null' => false])
+                ->addColumn('title', 'string', ['limit' => 50, 'default' => '', 'comment' => '日志标题', 'null' => false])
+                ->addColumn('data', 'text', ['limit' => MysqlAdapter::TEXT_LONG, 'null' => true, 'default' => null, 'comment' => '请求数据'])
+                ->addColumn('ip', 'string', ['limit' => 15, 'default' => '', 'comment' => 'IP地址', 'null' => false])
+                ->addColumn('user_agent', 'string', ['limit' => 255, 'default' => '', 'comment' => 'user-agent', 'null' => false])
+                // 时间相关
+                ->addColumn('create_time', 'biginteger', ['signed' => false, 'limit' => 16, 'default' => 0, 'comment' => '创建时间', 'null' => false])
+                // 索引
+                ->addIndex(['admin_id'], ['unique' => false])
+                ->create();
+        }
+    }
+
+    // +----------------------------------------------------------------------
+    // | 通用相关
+    // +----------------------------------------------------------------------
+
+    public function commonConfig(): void
+    {
+        if (!$this->hasTable('common_config')) {
             $table = $this->table('config', [
                 'id' => false,
-                'comment' => '系统配置',
+                'comment' => '通用-系统配置',
                 'row_format' => 'DYNAMIC',
                 'primary_key' => 'id',
                 'collation' => 'utf8mb4_unicode_ci',
@@ -148,63 +252,12 @@ class Install extends Migrator
         }
     }
 
-    public function adminGroupAccess(): void
+    public function commonArea(): void
     {
-        if (!$this->hasTable('admin_group_access')) {
-            $table = $this->table('admin_group_access', [
-                'id' => false,
-                'comment' => '管理员分组权限关联表',
-                'row_format' => 'DYNAMIC',
-                'primary_key' => ['admin_id', 'group_id'],
-                'collation' => 'utf8mb4_unicode_ci',
-            ]);
-
-            $table
-                // 相关ID
-                ->addColumn('admin_id', 'integer', ['comment' => '管理员ID', 'signed' => false, 'null' => false])
-                ->addColumn('group_id', 'integer', ['comment' => '分组ID', 'signed' => false, 'null' => false])
-                // 索引
-                ->addIndex(['admin_id', 'group_id'], ['unique' => true])
-                ->create();
-        }
-    }
-
-    public function adminLog(): void
-    {
-        if (!$this->hasTable('admin_log')) {
-            $table = $this->table('admin_log', [
-                'id' => false,
-                'comment' => '管理员日志表',
-                'row_format' => 'DYNAMIC',
-                'primary_key' => 'id',
-                'collation' => 'utf8mb4_unicode_ci',
-            ]);
-
-            $table
-                // 相关ID
-                ->addColumn('id', 'integer', ['comment' => 'ID', 'signed' => false, 'identity' => true, 'null' => false])
-                ->addColumn('admin_id', 'integer', ['comment' => '管理员ID', 'signed' => false, 'null' => false])
-                // 内容相关
-                ->addColumn('username', 'string', ['limit' => 20, 'default' => '', 'comment' => '用户名', 'null' => false])
-                ->addColumn('url', 'string', ['limit' => 255, 'default' => '', 'comment' => '操作URL', 'null' => false])
-                ->addColumn('title', 'string', ['limit' => 50, 'default' => '', 'comment' => '日志标题', 'null' => false])
-                ->addColumn('data', 'text', ['limit' => MysqlAdapter::TEXT_LONG, 'null' => true, 'default' => null, 'comment' => '请求数据'])
-                ->addColumn('ip', 'string', ['limit' => 15, 'default' => '', 'comment' => 'IP地址', 'null' => false])
-                ->addColumn('user_agent', 'string', ['limit' => 255, 'default' => '', 'comment' => 'user-agent', 'null' => false])
-                // 时间相关
-                ->addColumn('create_time', 'biginteger', ['signed' => false, 'limit' => 16, 'default' => 0, 'comment' => '创建时间', 'null' => false])
-                // 索引
-                ->addIndex(['admin_id'], ['unique' => false])
-                ->create();
-        }
-    }
-
-    public function area(): void
-    {
-        if (!$this->hasTable('area')) {
+        if (!$this->hasTable('common_area')) {
             $table = $this->table('area', [
                 'id' => false,
-                'comment' => '地区表',
+                'comment' => '通用-地区',
                 'row_format' => 'DYNAMIC',
                 'primary_key' => 'id',
                 'collation' => 'utf8mb4_unicode_ci',
@@ -233,12 +286,12 @@ class Install extends Migrator
         }
     }
 
-    private function attachment(): void
+    private function commonAttachment(): void
     {
-        if (!$this->hasTable('attachment')) {
+        if (!$this->hasTable('common_attachment')) {
             $table = $this->table('attachment', [
                 'id' => false,
-                'comment' => '附件表',
+                'comment' => '通用-附件',
                 'row_format' => 'DYNAMIC',
                 'primary_key' => 'id',
                 'collation' => 'utf8mb4_unicode_ci',
@@ -273,12 +326,12 @@ class Install extends Migrator
         }
     }
 
-    private function captcha(): void
+    private function commonCaptcha(): void
     {
-        if (!$this->hasTable('captcha')) {
+        if (!$this->hasTable('common_captcha')) {
             $table = $this->table('captcha', [
                 'id' => false,
-                'comment' => '验证码表',
+                'comment' => '通用-验证码',
                 'row_format' => 'DYNAMIC',
                 'primary_key' => 'id',
                 'collation' => 'utf8mb4_unicode_ci',
@@ -298,51 +351,112 @@ class Install extends Migrator
         }
     }
 
-    private function menuRule()
+
+    private function commonToken(): void
+    {
+        if (!$this->hasTable('common_token')) {
+            $table = $this->table('common_token', [
+                'id' => false,
+                'comment' => '通用-TOKEN',
+                'row_format' => 'DYNAMIC',
+                'primary_key' => 'id',
+                'collation' => 'utf8mb4_unicode_ci',
+            ]);
+
+            $table
+                // 相关内容
+                ->addColumn('token', 'string', ['limit' => 50, 'default' => '', 'comment' => 'Token', 'null' => false])
+                ->addColumn('type', 'string', ['limit' => 30, 'default' => '', 'comment' => '类型,如admin,user等', 'null' => false])
+                ->addColumn('user_id', 'integer', ['signed' => false, 'default' => 0, 'comment' => '用户ID', 'null' => false])
+                // 时间相关
+                ->addColumn('expire_time', 'biginteger', ['signed' => false, 'limit' => 16, 'default' => 0, 'comment' => '失效时间', 'null' => false])
+                ->addColumn('create_time', 'biginteger', ['signed' => false, 'limit' => 16, 'default' => 0, 'comment' => '创建时间', 'null' => false])
+                // 索引
+                ->addIndex(['token'], ['unique' => true])
+                ->create();
+        }
+    }
+
+
+    // +----------------------------------------------------------------------
+    // | 安全相关
+    // +----------------------------------------------------------------------
+
+    private function securityDataRecycle(): void
+    {
+        if (!$this->hasTable('security_data_recycle')) {
+            $table = $this->table('security_data_recycle', [
+                'id' => false,
+                'comment' => '安全-回收规则表',
+                'row_format' => 'DYNAMIC',
+                'primary_key' => 'id',
+                'collation' => 'utf8mb4_unicode_ci',
+            ]);
+
+            $table
+                ->addColumn('id', 'integer', ['comment' => 'ID', 'signed' => false, 'identity' => true, 'null' => false])
+                // 规则名称
+                ->addColumn('name','string', ['limit' => 50, 'default' => '', 'comment' => '规则名称', 'null' => false])
+                ->addColumn('controller','string', ['limit' => 50, 'default' => '', 'comment' => '控制器', 'null' => false])
+                ->addColumn('controller_name','string', ['limit' => 50, 'default' => '', 'comment' => '控制器名', 'null' => false])
+                ->addColumn('data_table','string', ['limit' => 50, 'default' => '', 'comment' => '对应数据表', 'null' => false])
+                ->addColumn('primary_key','string', ['limit' => 50, 'default' => '', 'comment' => '数据表主键', 'null' => false])
+                ->addColumn('status', 'enum', ['values' => '0,1', 'default' => '1', 'comment' => '状态:0=禁用,1=启用', 'null' => false])
+                // 时间相关
+                ->addColumn('create_time', 'biginteger', ['signed' => false, 'limit' => 16, 'default' => 0, 'comment' => '创建时间', 'null' => false])
+                ->addColumn('update_time', 'biginteger', ['signed' => false, 'limit' => 16, 'default' => 0, 'comment' => '更新时间', 'null' => false])
+                // 索引
+                ->addIndex(['name'])
+                ->addIndex(['controller'])
+                ->addIndex(['controller_name'])
+                ->addIndex(['data_table'])
+                ->addIndex(['primary_key'])
+                ->addIndex(['status'])
+                ->create();
+        }
+    }
+
+    private function securityDataRecycleLog(): void
     {
     }
 
-    private function securityDataRecycle()
+    private function securitySensitiveData(): void
     {
     }
 
-    private function securityDataRecycleLog()
+    private function securitySensitiveDataLog(): void
     {
     }
 
-    private function securitySensitiveData()
+
+
+    // +----------------------------------------------------------------------
+    // | 用户相关
+    // +----------------------------------------------------------------------
+    private function user(): void
     {
     }
 
-    private function securitySensitiveDataLog()
+    private function userGroup(): void
     {
     }
 
-    private function testBuild()
+    private function userMoneyLog(): void
     {
     }
 
-    private function token()
+    private function userRule(): void
     {
     }
 
-    private function user()
+    // +----------------------------------------------------------------------
+    // | 开发相关
+    // +----------------------------------------------------------------------
+    private function devTestBuild(): void
     {
     }
 
-    private function userGroup()
-    {
-    }
-
-    private function userMoneyLog()
-    {
-    }
-
-    private function userRule()
-    {
-    }
-
-    private function crudLog()
+    private function devCrudLog(): void
     {
     }
 
