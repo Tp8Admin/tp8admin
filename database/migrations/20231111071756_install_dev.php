@@ -19,6 +19,7 @@ class InstallDev extends Migrator
     public function change(): void
     {
         // 开发相关
+        $this->devTest();  // 开发-测试-最简表
         $this->devTest1(); // 开发-测试-根据字段类型
         $this->devTest2(); // 开发-测试-特殊字段
         $this->devTest3(); // 开发-测试-以特殊字符结尾的规则
@@ -28,6 +29,28 @@ class InstallDev extends Migrator
     // | 开发相关
     // +----------------------------------------------------------------------
 
+
+    private function devTest(): void
+    {
+        if (!$this->hasTable('dev_test')) {
+            $table = $this->table('dev_test', [
+                'id' => false,
+                'comment' => '开发-测试-最简表',
+                'row_format' => 'DYNAMIC',
+                'primary_key' => 'id',
+                'collation' => 'utf8mb4_unicode_ci',
+            ]);
+
+            $table
+                // 相关ID
+                ->addColumn('id', 'integer', ['comment' => 'ID', 'signed' => false, 'identity' => true, 'null' => false])
+                ->addColumn('name', 'string', ['default' => null, 'limit' => 50, 'comment' => '名称'])
+                ->addColumn('password', 'string', ['default' => null, 'limit' => 50, 'comment' => '密码'])
+                ->create();
+
+        }
+
+    }
 
     private function devTest1(): void
     {
