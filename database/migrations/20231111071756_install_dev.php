@@ -19,7 +19,8 @@ class InstallDev extends Migrator
     public function change(): void
     {
         // 开发相关
-        $this->devTest();  // 开发-测试-最简表
+        $this->devDemo1();  // 开发-测试-最简表1
+        $this->devDemo2();  // 开发-测试-最简表2
         $this->devTest1(); // 开发-测试-根据字段类型
         $this->devTest2(); // 开发-测试-特殊字段
         $this->devTest3(); // 开发-测试-以特殊字符结尾的规则
@@ -30,12 +31,12 @@ class InstallDev extends Migrator
     // +----------------------------------------------------------------------
 
 
-    private function devTest(): void
+    private function devDemo1(): void
     {
-        if (!$this->hasTable('dev_test')) {
-            $table = $this->table('dev_test', [
+        if (!$this->hasTable('dev_demo1')) {
+            $table = $this->table('dev_demo1', [
                 'id' => false,
-                'comment' => '开发-测试-最简表',
+                'comment' => '开发-测试-最简表1',
                 'row_format' => 'DYNAMIC',
                 'primary_key' => 'id',
                 'collation' => 'utf8mb4_unicode_ci',
@@ -47,7 +48,26 @@ class InstallDev extends Migrator
                 ->addColumn('name', 'string', ['default' => null, 'limit' => 50, 'comment' => '名称'])
                 ->addColumn('password', 'string', ['default' => null, 'limit' => 50, 'comment' => '密码'])
                 ->create();
+        }
 
+    }
+
+    private function devDemo2(): void
+    {
+        if (!$this->hasTable('dev_demo2')) {
+            $table = $this->table('dev_demo2', [
+                'id' => false,
+                'comment' => '开发-测试-最简表2',
+                'row_format' => 'DYNAMIC',
+                'primary_key' => 'id',
+                'collation' => 'utf8mb4_unicode_ci',
+            ]);
+
+            $table
+                // 相关ID
+                ->addColumn('id', 'integer', ['comment' => 'ID', 'signed' => false, 'identity' => true, 'null' => false])
+                ->addColumn('name', 'string', ['default' => null, 'limit' => 50, 'comment' => '名称'])
+                ->create();
         }
 
     }

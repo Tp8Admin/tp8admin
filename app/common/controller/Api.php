@@ -37,7 +37,26 @@ class Api extends BaseController
      */
     protected function initialize(): void
     {
+//        if ($this->useSystemSettings) {
+            // ip 检查
+            // ip_check();
+
+            // 时区设定
+            // set_timezone();
+//        }
+
         parent::initialize();
+
+        /**
+         * 设置默认过滤规则
+         */
+        $this->request->filter('filter');
+
+        // 加载控制器语言包
+        $langSet = $this->app->lang->getLangSet();
+        $this->app->lang->load([
+            app_path() . 'lang' . DIRECTORY_SEPARATOR . $langSet . DIRECTORY_SEPARATOR .(str_replace('/', DIRECTORY_SEPARATOR, $this->app->request->controllerPath)) .'.php'
+        ]);
     }
 
     /**
@@ -81,7 +100,7 @@ class Api extends BaseController
     {
         $result = [
             'code' => $code,
-            'msg'  => $msg,
+            'msg' => $msg,
             'time' => $this->request->server('REQUEST_TIME'),
             'data' => $data,
         ];
